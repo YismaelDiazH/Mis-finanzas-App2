@@ -5,6 +5,8 @@ import { isEmpty, size } from "lodash";
 import { Image, Input, Button } from "@rneui/base";
 import Loading from "../../kernel/components/Loading";
 import { Icon } from "react-native-elements";
+import { validateEmail } from "../../kernel/validation";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 export default function () {
   const payload = {
     email: "",
@@ -16,12 +18,43 @@ export default function () {
   const [data, setData] = useState(payload);
   const [showPassword, setShowPassword] = useState(true);
   const [showRepeatPassword, setShowRepeatPassword] = useState(true);
-  const changePayload = (e, type) =>{
-    setData({...data,[type] : e.nativeEvent.text})
-  }
-  const createUser = ()=>{
-    console.log('data', data);
-  }
+  const changePayload = (e, type) => {
+    setData({ ...data, [type]: e.nativeEvent.text });
+  };
+  const createUser = () => {
+    if (!(isEmpty(data.email) || isEmpty(data.password))) {
+      if (validateEmail(data.email)) {
+        if (size(data.password) >= 6) {
+          if (data.password === data.repeatPassword) {
+            console.log("Listo calisto");
+            setError(payload);
+          } else {
+            setError({
+              email: "",
+              password: "La contraseña debe coincidir",
+              repeatPassword: "La contraseña debe coincidir",
+            });
+          }
+        } else {
+          setError({
+            email: "",
+            password: "La contraseña debe tener al menos 6 caracteres",
+          });
+        }
+      } else {
+        setError({
+          email: "Debe ser un correo electrónico",
+          password: "",
+          repeatPassword: "",
+        });
+      }
+    } else {
+      setError({
+        email: "Campo obligatorio",
+        repeatPassword: "Campo obligatorio",
+      });
+    }
+  };
 
   return (
     <KeyboardAwareScrollView>
@@ -41,6 +74,7 @@ export default function () {
             containerStyle={styles.input}
             onChange={(e) => changePayload(e, "email")}
             errorMessage={error.email}
+            autoCapitalize='none'
           />
           <Input
             placeholder="Contraseña"
@@ -57,7 +91,7 @@ export default function () {
             onChange={(e) => changePayload(e, "password")}
             errorMessage={error.password}
           />
-           <Input
+          <Input
             placeholder="Contraseña"
             containerStyle={styles.input}
             rightIcon={
@@ -73,10 +107,10 @@ export default function () {
             errorMessage={error.repeatPassword}
           />
           <Button
-          title='Crear cuenta'
-          containerStyle={styles.btnContainer}
-          buttonStyle={styles.btn}
-          onPress={createUser}
+            title="Crear cuenta"
+            containerStyle={styles.btnContainer}
+            buttonStyle={styles.btn}
+            onPress={createUser}
           />
         </View>
       </View>
@@ -86,30 +120,29 @@ export default function () {
 }
 
 const styles = StyleSheet.create({
-    logo: {
-        width: '100%',
-        height: 150,
-        marginTop: 20
-    },
-    viewForm: {
-        marginHorizontal:20
-    },
-    container: {
-        flex:1,
-        alignItems: 'center',
-        justifyContent:'center',
-        marginTop:20
-    },
-    input:{
-        width:'100%',
-        marginVertical: 20
-    },
-    btnContainer:{
-        marginVertical:20,
-        width:'95%'
-
-    },
-    btn:{
-        color:'#28a745'
-    }
+  logo: {
+    width: "100%",
+    height: 150,
+    marginTop: 20,
+  },
+  viewForm: {
+    marginHorizontal: 20,
+  },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  input: {
+    width: "100%",
+    marginVertical: 10,
+  },
+  btnContainer: {
+    marginBottom:20,
+    width: "95%",
+  },
+  btn: {
+    color: "#28a745",
+  },
 });
