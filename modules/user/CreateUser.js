@@ -74,7 +74,7 @@ export default function () {
             containerStyle={styles.input}
             onChange={(e) => changePayload(e, "email")}
             errorMessage={error.email}
-            autoCapitalize='none'
+            autoCapitalize="none"
           />
           <Input
             placeholder="Contraseña"
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   btnContainer: {
-    marginBottom:20,
+    marginBottom: 20,
     width: "95%",
   },
   btn: {
