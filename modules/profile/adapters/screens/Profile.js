@@ -1,29 +1,30 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import Loading from '../../../../kernel/components/Loading'
 import UserGuest from './UserGuest'
 import UserLogged from './UserLogged'
+import { useNavigation } from '@react-navigation/native'
+
 
 export default function Profile() {
+    const navigation = useNavigation();
     const [user, setUser] = useState(null)
+    const [session, setSession] = useState(null)
     useEffect(() => {
-        (async () => {
-            try {
-                const value = await AsyncStorage.getItem('@session')
-                console.log("Session", value);
-                if (value !== null) {
-                    setUser(true)
-                } else {
-                    setUser(false)
-                }
-            } catch (e) {
-                console.error("Error -> Profile", e)
-            }
-        })()
-    }, [])
-    if (user == null) return <Loading />
-    return user ? <UserLogged /> : <UserGuest />
+       const auth = getAuth();
+       onAuthStateChanged(auth, (credential)=>{
+        setUser(credential);
+        !credential ? setSession(false) : setSession(true);
+       });
+       
+    }, []);
+    if (session===null) return <Loading show={true} text='cargando...' />
+    return session ? (
+        <UserLogged user={user}/>
+    ) :(
+        <UserGuest navigation={navigation} />
+    ) 
 }
 
 const styles = StyleSheet.create({})

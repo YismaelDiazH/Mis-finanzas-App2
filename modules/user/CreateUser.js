@@ -3,6 +3,7 @@ import { Input, Button, Image, Icon } from "@rneui/base";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { validateEmail } from "../../kernel/validation";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Alert from "../../kernel/components/Alert";
 
 import React, { useState } from "react";
 import { isEmpty, size } from "lodash";
@@ -25,6 +26,9 @@ export default function CreateUser(props) {
   const [error, setError] = useState(payLoad)
   const [data, setData] = useState(payLoad)
   const [showPassword, setShowPassword] = useState(true)
+  const [showAlert, setShowAlert] = useState(false)
+  const [alertText, setAlertText] = useState('')
+  const [alertType, setAlertType] = useState('')
   const [showRepeatPassword, setShowRepeatPassword] = useState(true)
   const changePayLoad = (e, type) => {
       setData({ ...data, [type]: e.nativeEvent.text })
@@ -144,6 +148,7 @@ export default function CreateUser(props) {
               </View>
           </View>
           <Loading show={show} text='Registrando' />
+          <Alert show={showAlert} text={alertText} type={alertType}/>
       </KeyboardAwareScrollView>
   )
 }
